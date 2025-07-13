@@ -18,10 +18,10 @@ public class Subtask extends Task {
     public String toString() {
         return "Subtask{" +
                 "epicId=" + epicId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", id=" + getId() +
+                ", status=" + getStatus() +
                 '}';
     }
 }
