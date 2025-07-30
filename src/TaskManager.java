@@ -1,7 +1,7 @@
 import java.util.List;
 
 public interface TaskManager {
-    //Здесь методы для Task
+    // Оставляем только нужные методы
     List<Task> getAllTasks();
     void deleteAllTasks();
     Task getTaskById(int id);
@@ -9,22 +9,25 @@ public interface TaskManager {
     void updateTask(Task task);
     void deleteTaskById(int id);
 
-    //Здесь методы для Epic
     List<Epic> getAllEpics();
     void deleteAllEpics();
-    Epic getEpicById(int id);
+    Epic getEpicById(int id);  // Оставляем только getEpicById
     Epic createEpic(Epic epic);
     void updateEpic(Epic epic);
     void deleteEpicById(int id);
 
-    //Здесь методы для Subtask
     List<Subtask> getAllSubtasks();
     void deleteAllSubtasks();
-    Subtask getSubtaskById(int id);
+    Subtask getSubtaskById(int id);  // Оставляем только getSubtaskById
     Subtask createSubtask(Subtask subtask);
     void updateSubtask(Subtask subtask);
     void deleteSubtaskById(int id);
 
-    //Это допы
+    List<Task> getHistory();
     List<Subtask> getSubtasksByEpicId(int epicId);
+
+    // Удаляем эти методы:
+    // void getTask();
+    // void getSubtask();
+    // void getEpic();
 }
