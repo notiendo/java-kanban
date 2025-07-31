@@ -1,7 +1,6 @@
 import java.util.List;
 
 public interface TaskManager {
-    // Оставляем только нужные методы
     List<Task> getAllTasks();
     void deleteAllTasks();
     Task getTaskById(int id);
@@ -25,9 +24,4 @@ public interface TaskManager {
 
     List<Task> getHistory();
     List<Subtask> getSubtasksByEpicId(int epicId);
-
-    // Удаляем эти методы:
-    // void getTask();
-    // void getSubtask();
-    // void getEpic();
 }
