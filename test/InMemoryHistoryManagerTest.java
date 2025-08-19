@@ -3,14 +3,14 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InMemoryHistoryManagerTest {
+class InMemoryHistoryManagerTest {
     private HistoryManager historyManager;
     private Task task1;
     private Task task2;
     private Task task3;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         historyManager = new InMemoryHistoryManager();
         task1 = new Task("Task 1", "Description", Status.NEW);
         task1.setId(1);
