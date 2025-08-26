@@ -3,14 +3,14 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InMemoryHistoryManagerTest {
+class InMemoryHistoryManagerTest {
     private HistoryManager historyManager;
     private Task task1;
     private Task task2;
     private Task task3;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         historyManager = new InMemoryHistoryManager();
         task1 = new Task("Task 1", "Description", Status.NEW);
         task1.setId(1);
@@ -21,7 +21,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldAddTaskToHistory() {
+    void shouldAddTaskToHistory() {
         Task task = new Task("Test", "Test", Status.NEW);
         task.setId(1);
 
@@ -32,7 +32,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldNotDuplicateTasksInHistory() {
+    void shouldNotDuplicateTasksInHistory() {
         Task task = new Task("Test", "Test", Status.NEW);
         task.setId(1);
 
@@ -44,7 +44,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldLimitHistorySize() {
+    void shouldLimitHistorySize() {
         for (int i = 1; i <= 15; i++) {
             Task task = new Task("Task " + i, "Desc", Status.NEW);
             task.setId(i);
@@ -58,7 +58,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldAddTasksToHistory() {
+    void shouldAddTasksToHistory() {
         historyManager.add(task1);
         historyManager.add(task2);
 
@@ -69,7 +69,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldRemoveDuplicatesWhenAddingSameTask() {
+    void shouldRemoveDuplicatesWhenAddingSameTask() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task1);
@@ -81,7 +81,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldRemoveTaskFromHistory() {
+    void shouldRemoveTaskFromHistory() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
@@ -96,7 +96,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldMaintainOrderAfterRemoval() {
+    void shouldMaintainOrderAfterRemoval() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
