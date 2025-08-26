@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
     private TaskManager manager;
@@ -26,8 +25,31 @@ class InMemoryTaskManagerTest {
         manager.createEpic(epic);
 
         Subtask subtask = new Subtask("Subtask", "Subtask", Status.NEW, epic.getId());
-        subtask.setEpicId(subtask.getId()); // Пытаемся сделать эпиком себя
+        subtask.setEpicId(subtask.getId());
 
         assertThrows(IllegalArgumentException.class, () -> manager.createSubtask(subtask));
+    }
+
+    @Test
+    void shouldRemoveTaskFromHistoryWhenDeleted() {
+        Task task = manager.createTask(new Task("Task", "Desc", Status.NEW));
+        manager.getTaskById(task.getId());
+
+        manager.deleteTaskById(task.getId());
+
+        assertTrue(manager.getHistory().isEmpty());
+    }
+
+    @Test
+    void shouldRemoveEpicAndSubtasksFromHistoryWhenDeleted() {
+        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
+        Subtask subtask = manager.createSubtask(new Subtask("Subtask", "Desc", Status.NEW, epic.getId()));
+
+        manager.getEpicById(epic.getId());
+        manager.getSubtaskById(subtask.getId());
+
+        manager.deleteEpicById(epic.getId());
+
+        assertTrue(manager.getHistory().isEmpty());
     }
 }

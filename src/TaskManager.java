@@ -10,14 +10,14 @@ public interface TaskManager {
 
     List<Epic> getAllEpics();
     void deleteAllEpics();
-    Epic getEpicById(int id);  // Оставляем только getEpicById
+    Epic getEpicById(int id);
     Epic createEpic(Epic epic);
     void updateEpic(Epic epic);
     void deleteEpicById(int id);
 
     List<Subtask> getAllSubtasks();
     void deleteAllSubtasks();
-    Subtask getSubtaskById(int id);  // Оставляем только getSubtaskById
+    Subtask getSubtaskById(int id);
     Subtask createSubtask(Subtask subtask);
     void updateSubtask(Subtask subtask);
     void deleteSubtaskById(int id);
