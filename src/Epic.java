@@ -20,10 +20,6 @@ public class Epic extends Task {
         subtaskIds.remove(subtaskId);
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     @Override
     public String toString() {
         return "Epic{" +
