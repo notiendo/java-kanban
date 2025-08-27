@@ -17,18 +17,15 @@ public class InMemoryHistoryManager implements HistoryManager {
     private final Map<Integer, Node> historyMap = new HashMap<>();
     private Node head;
     private Node tail;
-    private static final int MAX_HISTORY_SIZE = 10; // Можно добавить ограничение
 
     @Override
     public void add(Task task) {
         if (task == null) return;
 
         remove(task.getId());
+
         linkLast(task);
 
-        if (historyMap.size() > MAX_HISTORY_SIZE) {
-            remove(head.task.getId());
-        }
     }
 
     @Override
