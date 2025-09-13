@@ -1,35 +1,33 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @Override
     protected InMemoryTaskManager createTaskManager() {
         return new InMemoryTaskManager();
     }
 
     @Test
-    public void testPrioritizedTasks() {
-        LocalDateTime now = LocalDateTime.now();
+    void shouldPreserveTaskEqualityById() {
+        Task task1 = new Task("A", "A", Status.NEW);
+        Task task2 = new Task("B", "B", Status.IN_PROGRESS);
+        task2.setId(task1.getId());
 
-        Task task1 = new Task("Task1", "Desc", Status.NEW,
-                Duration.ofHours(1), now.plusHours(2));
-        Task task2 = new Task("Task2", "Desc", Status.NEW,
-                Duration.ofHours(1), now.plusHours(1));
-
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-
-        List<Task> prioritized = taskManager.getPrioritizedTasks();
-        assertEquals(2, prioritized.size());
-        assertEquals("Task2", prioritized.get(0).getName());
+        assertEquals(task1, task2, "Задачи с одинаковым ID должны быть равны");
     }
 
     @Test
-    public void testTaskWithoutTimeNotInPrioritized() {
-        Task task = new Task("Task", "Desc", Status.NEW);
-        taskManager.createTask(task);
+    void shouldNotAllowEpicAsOwnSubtask() {
+        Epic epic = new Epic("Epic", "Epic");
+        taskManager.createEpic(epic);
 
-        List<Task> prioritized = taskManager.getPrioritizedTasks();
-        assertTrue(prioritized.isEmpty());
+        Subtask subtask = new Subtask("Subtask", "Subtask", Status.NEW, epic.getId());
+        subtask.setEpicId(subtask.getId());
+
+        assertThrows(IllegalArgumentException.class, () -> taskManager.createSubtask(subtask));
     }
 }
