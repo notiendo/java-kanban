@@ -90,6 +90,56 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    public static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
+
+        try {
+            if (!file.exists() || file.length() == 0) {
+                return manager;
+            }
+
+            String content = Files.readString(file.toPath());
+            String[] lines = content.split("\n");
+
+            for (int i = 1; i < lines.length; i++) {
+                String line = lines[i].trim();
+                if (line.isEmpty()) continue;
+
+                Task task = manager.taskFromString(line);
+
+                if (task instanceof Subtask subtask) {
+                    manager.subtasks.put(subtask.getId(), subtask);
+
+                    Epic epic = manager.epics.get(subtask.getEpicId());
+                    if (epic != null) {
+                        epic.addSubtaskId(subtask.getId());
+                    }
+                } else if (task instanceof Epic epic) {
+                    manager.epics.put(epic.getId(), epic);
+                } else {
+                    manager.tasks.put(task.getId(), task);
+                }
+
+                if (task.getId() >= manager.nextId) {
+                    manager.nextId = task.getId() + 1;
+                }
+
+                if (task.getStartTime() != null) {
+                    manager.prioritizedTasks.add(task);
+                }
+            }
+
+            for (Epic epic : manager.epics.values()) {
+                manager.updateEpicTime(epic);
+            }
+
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка загрузки из файла", e);
+        }
+
+        return manager;
+    }
+
     private void save() {
         try {
             List<String> lines = new ArrayList<>();

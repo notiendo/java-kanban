@@ -20,7 +20,7 @@ public class Epic extends Task {
     }
 
     public void removeSubtaskId(int subtaskId) {
-        subtaskIds.remove((Integer) subtaskId);
+        subtaskIds.remove(subtaskId);
     }
 
     @Override
@@ -63,7 +63,22 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
+    public void calculateEndTime() {
+        if (subtaskIds.isEmpty()) {
+            this.endTime = null;
+            return;
+        }
+
+        this.endTime = subtaskIds.stream()
+                .map(this::getSubtaskById)
+                .filter(subtask -> subtask != null && subtask.getEndTime() != null)
+                .map(Task::getEndTime)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+    }
+
     private Task getSubtaskById(int id) {
+        // Этот метод будет реализован в менеджере
         return null;
     }
 

@@ -319,7 +319,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void updateEpicTime(Epic epic) {
+    void updateEpicTime(Epic epic) {
         if (epic == null) {
             return;
         }
@@ -329,6 +329,12 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setEndTime(null);
             return;
         }
+
+        LocalDateTime earliestStart = epicSubtasks.stream()
+                .map(Subtask::getStartTime)
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
 
         LocalDateTime latestEnd = epicSubtasks.stream()
                 .map(Subtask::getEndTime)
