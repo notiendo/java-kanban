@@ -1,5 +1,3 @@
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -298,7 +296,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    void updateEpicTimeCharacteristics(int epicId) {
+    private void updateEpicTimeCharacteristics(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic != null) {
             List<Subtask> epicSubtasks = getSubtasksByEpicId(epicId);
