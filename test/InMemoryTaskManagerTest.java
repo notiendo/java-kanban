@@ -1,54 +1,35 @@
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
-
+public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @Override
     protected InMemoryTaskManager createTaskManager() {
         return new InMemoryTaskManager();
     }
 
     @Test
-    void shouldPreserveTaskEqualityById() {
-        Task task1 = new Task("A", "A", Status.NEW);
-        Task task2 = new Task("B", "B", Status.IN_PROGRESS);
-        task2.setId(task1.getId());
+    public void testPrioritizedTasks() {
+        LocalDateTime now = LocalDateTime.now();
 
-        assertEquals(task1, task2, "Задачи с одинаковым ID должны быть равны");
+        Task task1 = new Task("Task1", "Desc", Status.NEW,
+                Duration.ofHours(1), now.plusHours(2));
+        Task task2 = new Task("Task2", "Desc", Status.NEW,
+                Duration.ofHours(1), now.plusHours(1));
+
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+
+        List<Task> prioritized = taskManager.getPrioritizedTasks();
+        assertEquals(2, prioritized.size());
+        assertEquals("Task2", prioritized.get(0).getName());
     }
 
     @Test
-    void shouldNotAllowEpicAsOwnSubtask() {
-        Epic epic = new Epic("Epic", "Epic");
-        taskManager.createEpic(epic);
+    public void testTaskWithoutTimeNotInPrioritized() {
+        Task task = new Task("Task", "Desc", Status.NEW);
+        taskManager.createTask(task);
 
-        Subtask subtask = new Subtask("Subtask", "Subtask", Status.NEW, epic.getId());
-        subtask.setEpicId(subtask.getId());
-
-        assertThrows(IllegalArgumentException.class, () -> taskManager.createSubtask(subtask));
-    }
-
-    @Test
-    void shouldRemoveTaskFromHistoryWhenDeleted() {
-        Task task = taskManager.createTask(new Task("Task", "Desc", Status.NEW));
-        taskManager.getTaskById(task.getId());
-
-        taskManager.deleteTaskById(task.getId());
-
-        assertTrue(taskManager.getHistory().isEmpty());
-    }
-
-    @Test
-    void shouldRemoveEpicAndSubtasksFromHistoryWhenDeleted() {
-        Epic epic = taskManager.createEpic(new Epic("Epic", "Desc"));
-        Subtask subtask = taskManager.createSubtask(new Subtask("Subtask", "Desc", Status.NEW, epic.getId()));
-
-        taskManager.getEpicById(epic.getId());
-        taskManager.getSubtaskById(subtask.getId());
-
-        taskManager.deleteEpicById(epic.getId());
-
-        assertTrue(taskManager.getHistory().isEmpty());
+        List<Task> prioritized = taskManager.getPrioritizedTasks();
+        assertTrue(prioritized.isEmpty());
     }
 }

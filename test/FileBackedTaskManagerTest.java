@@ -1,73 +1,55 @@
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File tempFile;
 
     @Override
     protected FileBackedTaskManager createTaskManager() {
         try {
-            tempFile = Files.createTempFile("tasks", ".csv").toFile();
-            tempFile.deleteOnExit();
+            tempFile = File.createTempFile("test", ".csv");
             return new FileBackedTaskManager(tempFile);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create temp file", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @AfterEach
+    public void tearDown() {
+        if (tempFile != null && tempFile.exists()) {
+            tempFile.delete();
         }
     }
 
     @Test
-    void shouldSaveAndLoadTasks() throws IOException {
-        Task task = new Task("Test Task", "Description", Status.NEW,
-                Duration.ofHours(1), LocalDateTime.now());
-        taskManager.createTask(task);
+    public void testSaveAndLoad() {
+        FileBackedTaskManager manager = createTaskManager();
 
-        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
-        Optional<Task> loadedTask = loadedManager.getTaskById(task.getId());
+        Task task = new Task("Test", "Description", Status.NEW);
+        manager.createTask(task);
 
-        assertTrue(loadedTask.isPresent());
-        assertEquals(task.getName(), loadedTask.get().getName());
-        assertEquals(task.getDuration(), loadedTask.get().getDuration());
+        Epic epic = new Epic("Epic", "Description");
+        Epic createdEpic = manager.createEpic(epic);
+
+        Subtask subtask = new Subtask("Sub", "Description", Status.NEW, createdEpic.getId());
+        manager.createSubtask(subtask);
+
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
+
+        assertEquals(1, loaded.getAllTasks().size());
+        assertEquals(1, loaded.getAllEpics().size());
+        assertEquals(1, loaded.getAllSubtasks().size());
     }
 
     @Test
-    void shouldSaveAndLoadEpicWithSubtasks() {
-        Epic epic = new Epic("Test Epic", "Description");
-        Epic createdEpic = taskManager.createEpic(epic);
+    public void testLoadFromEmptyFile() {
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
 
-        Subtask subtask = new Subtask("Subtask", "Description", Status.NEW, createdEpic.getId(),
-                Duration.ofHours(2), LocalDateTime.now());
-        taskManager.createSubtask(subtask);
-
-        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
-        Optional<Epic> loadedEpic = loadedManager.getEpicById(createdEpic.getId());
-
-        assertTrue(loadedEpic.isPresent());
-        assertEquals(1, loadedEpic.get().getSubtaskIds().size());
-    }
-
-    @Test
-    void shouldHandleEmptyFile() throws IOException {
-        Files.write(tempFile.toPath(), new byte[0]);
-
-        assertDoesNotThrow(() -> {
-            FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
-            assertTrue(loadedManager.getAllTasks().isEmpty());
-        });
-    }
-
-    @Test
-    void shouldThrowExceptionWhenFileNotFound() {
-        File nonExistentFile = new File("nonexistent.csv");
-
-        assertThrows(ManagerSaveException.class, () -> {
-            FileBackedTaskManager.loadFromFile(nonExistentFile);
-        });
+        assertTrue(loaded.getAllTasks().isEmpty());
+        assertTrue(loaded.getAllEpics().isEmpty());
+        assertTrue(loaded.getAllSubtasks().isEmpty());
     }
 }

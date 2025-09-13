@@ -11,49 +11,6 @@ public class Epic extends Task {
         super(name, description, Status.NEW);
     }
 
-    public List<Integer> getSubtaskIds() {
-        return subtaskIds;
-    }
-
-    public void addSubtaskId(int subtaskId) {
-        subtaskIds.add(subtaskId);
-    }
-
-    public void removeSubtaskId(int subtaskId) {
-        subtaskIds.remove(subtaskId);
-    }
-
-    @Override
-    public Duration getDuration() {
-        if (subtaskIds.isEmpty()) {
-            return Duration.ZERO;
-        }
-
-        long totalMinutes = subtaskIds.stream()
-                .mapToLong(id -> {
-                    Task subtask = getSubtaskById(id);
-                    return subtask != null && subtask.getDuration() != null ?
-                            subtask.getDuration().toMinutes() : 0;
-                })
-                .sum();
-
-        return Duration.ofMinutes(totalMinutes);
-    }
-
-    @Override
-    public LocalDateTime getStartTime() {
-        if (subtaskIds.isEmpty()) {
-            return null;
-        }
-
-        return subtaskIds.stream()
-                .map(this::getSubtaskById)
-                .filter(subtask -> subtask != null && subtask.getStartTime() != null)
-                .map(Task::getStartTime)
-                .min(LocalDateTime::compareTo)
-                .orElse(null);
-    }
-
     @Override
     public LocalDateTime getEndTime() {
         return endTime;
@@ -63,23 +20,59 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
-    public void calculateEndTime() {
-        if (subtaskIds.isEmpty()) {
+    @Override
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public List<Integer> getSubtaskIds() {
+        return subtaskIds;
+    }
+
+    public void addSubtaskId(int subtaskId) {
+        subtaskIds.add(subtaskId);
+    }
+
+    public void removeSubtaskId(int subtaskId) {
+        subtaskIds.remove((Integer) subtaskId);
+    }
+
+    public void clearSubtaskIds() {
+        subtaskIds.clear();
+    }
+
+    public void updateTimeCharacteristics(List<Subtask> subtasks) {
+        if (subtasks == null || subtasks.isEmpty()) {
+            this.startTime = null;
+            this.duration = Duration.ZERO;
             this.endTime = null;
             return;
         }
 
-        this.endTime = subtaskIds.stream()
-                .map(this::getSubtaskById)
-                .filter(subtask -> subtask != null && subtask.getEndTime() != null)
-                .map(Task::getEndTime)
-                .max(LocalDateTime::compareTo)
-                .orElse(null);
-    }
+        LocalDateTime earliestStart = null;
+        LocalDateTime latestEnd = null;
+        long totalDuration = 0;
 
-    private Task getSubtaskById(int id) {
-        // Этот метод будет реализован в менеджере
-        return null;
+        for (Subtask subtask : subtasks) {
+            if (subtask.getStartTime() != null) {
+                if (earliestStart == null || subtask.getStartTime().isBefore(earliestStart)) {
+                    earliestStart = subtask.getStartTime();
+                }
+
+                LocalDateTime subtaskEnd = subtask.getEndTime();
+                if (subtaskEnd != null && (latestEnd == null || subtaskEnd.isAfter(latestEnd))) {
+                    latestEnd = subtaskEnd;
+                }
+            }
+
+            if (subtask.getDuration() != null) {
+                totalDuration += subtask.getDuration().toMinutes();
+            }
+        }
+
+        this.startTime = earliestStart;
+        this.duration = Duration.ofMinutes(totalDuration);
+        this.endTime = latestEnd;
     }
 
     @Override

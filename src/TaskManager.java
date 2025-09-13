@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Optional;
 
 public interface TaskManager {
 
@@ -7,7 +6,7 @@ public interface TaskManager {
 
     void deleteAllTasks();
 
-    Optional<Task> getTaskById(int id);
+    Task getTaskById(int id);
 
     Task createTask(Task task);
 
@@ -15,13 +14,11 @@ public interface TaskManager {
 
     void deleteTaskById(int id);
 
-
     List<Epic> getAllEpics();
 
     void deleteAllEpics();
 
-
-    Optional<Epic> getEpicById(int id);
+    Epic getEpicById(int id);
 
     Epic createEpic(Epic epic);
 
@@ -33,7 +30,7 @@ public interface TaskManager {
 
     void deleteAllSubtasks();
 
-    Optional<Subtask> getSubtaskById(int id);
+    Subtask getSubtaskById(int id);
 
     Subtask createSubtask(Subtask subtask);
 
@@ -49,5 +46,4 @@ public interface TaskManager {
 
     boolean hasTimeOverlap(Task task1, Task task2);
 
-    boolean isTimeOverlappingWithExisting(Task task);
 }
