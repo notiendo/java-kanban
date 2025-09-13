@@ -1,13 +1,12 @@
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int nextId = 1;
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private final Map<Integer, Epic> epics = new HashMap<>();
-    private final Map<Integer, Subtask> subtasks = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int nextId = 1;
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, Subtask> subtasks = new HashMap<>();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    // Реализация методов для Task
     @Override
     public List<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
@@ -50,7 +49,6 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.remove(id);
     }
 
-    // Реализация методов для Epic
     @Override
     public List<Epic> getAllEpics() {
         return new ArrayList<>(epics.values());
@@ -105,7 +103,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // Реализация методов для Subtask
     @Override
     public List<Subtask> getAllSubtasks() {
         return new ArrayList<>(subtasks.values());
@@ -136,8 +133,12 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask createSubtask(Subtask subtask) {
         Epic epic = epics.get(subtask.getEpicId());
         if (epic == null) {
-            return null;
+            throw new IllegalArgumentException("Эпик с ID " + subtask.getEpicId() + " не существует");
         }
+        if (subtask.getEpicId() == subtask.getId()) {
+            throw new IllegalArgumentException("Подзадача не может быть своим собственным эпиком");
+        }
+
         subtask.setId(nextId++);
         subtasks.put(subtask.getId(), subtask);
         epic.addSubtaskId(subtask.getId());
