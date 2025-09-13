@@ -296,7 +296,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void updateEpicTimeCharacteristics(int epicId) {
+    protected void updateEpicTimeCharacteristics(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic != null) {
             List<Subtask> epicSubtasks = getSubtasksByEpicId(epicId);
