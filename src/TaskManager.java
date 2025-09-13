@@ -41,4 +41,9 @@ public interface TaskManager {
     List<Task> getHistory();
 
     List<Subtask> getSubtasksByEpicId(int epicId);
+
+    List<Task> getPrioritizedTasks();
+
+    boolean hasTimeOverlap(Task task1, Task task2);
+
 }

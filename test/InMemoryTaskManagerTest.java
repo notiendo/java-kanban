@@ -1,13 +1,14 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
-    private TaskManager manager;
-
-    @BeforeEach
-    void setUp() {
-        manager = Managers.getDefault();
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
+    @Override
+    protected InMemoryTaskManager createTaskManager() {
+        return new InMemoryTaskManager();
     }
 
     @Test
@@ -22,34 +23,11 @@ class InMemoryTaskManagerTest {
     @Test
     void shouldNotAllowEpicAsOwnSubtask() {
         Epic epic = new Epic("Epic", "Epic");
-        manager.createEpic(epic);
+        taskManager.createEpic(epic);
 
         Subtask subtask = new Subtask("Subtask", "Subtask", Status.NEW, epic.getId());
         subtask.setEpicId(subtask.getId());
 
-        assertThrows(IllegalArgumentException.class, () -> manager.createSubtask(subtask));
-    }
-
-    @Test
-    void shouldRemoveTaskFromHistoryWhenDeleted() {
-        Task task = manager.createTask(new Task("Task", "Desc", Status.NEW));
-        manager.getTaskById(task.getId());
-
-        manager.deleteTaskById(task.getId());
-
-        assertTrue(manager.getHistory().isEmpty());
-    }
-
-    @Test
-    void shouldRemoveEpicAndSubtasksFromHistoryWhenDeleted() {
-        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
-        Subtask subtask = manager.createSubtask(new Subtask("Subtask", "Desc", Status.NEW, epic.getId()));
-
-        manager.getEpicById(epic.getId());
-        manager.getSubtaskById(subtask.getId());
-
-        manager.deleteEpicById(epic.getId());
-
-        assertTrue(manager.getHistory().isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> taskManager.createSubtask(subtask));
     }
 }
