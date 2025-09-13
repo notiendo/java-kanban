@@ -2,12 +2,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
-    private TaskManager manager;
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
-    @BeforeEach
-    void setUp() {
-        manager = Managers.getDefault();
+    @Override
+    protected InMemoryTaskManager createTaskManager() {
+        return new InMemoryTaskManager();
     }
 
     @Test
@@ -22,34 +21,34 @@ class InMemoryTaskManagerTest {
     @Test
     void shouldNotAllowEpicAsOwnSubtask() {
         Epic epic = new Epic("Epic", "Epic");
-        manager.createEpic(epic);
+        taskManager.createEpic(epic);
 
         Subtask subtask = new Subtask("Subtask", "Subtask", Status.NEW, epic.getId());
         subtask.setEpicId(subtask.getId());
 
-        assertThrows(IllegalArgumentException.class, () -> manager.createSubtask(subtask));
+        assertThrows(IllegalArgumentException.class, () -> taskManager.createSubtask(subtask));
     }
 
     @Test
     void shouldRemoveTaskFromHistoryWhenDeleted() {
-        Task task = manager.createTask(new Task("Task", "Desc", Status.NEW));
-        manager.getTaskById(task.getId());
+        Task task = taskManager.createTask(new Task("Task", "Desc", Status.NEW));
+        taskManager.getTaskById(task.getId());
 
-        manager.deleteTaskById(task.getId());
+        taskManager.deleteTaskById(task.getId());
 
-        assertTrue(manager.getHistory().isEmpty());
+        assertTrue(taskManager.getHistory().isEmpty());
     }
 
     @Test
     void shouldRemoveEpicAndSubtasksFromHistoryWhenDeleted() {
-        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
-        Subtask subtask = manager.createSubtask(new Subtask("Subtask", "Desc", Status.NEW, epic.getId()));
+        Epic epic = taskManager.createEpic(new Epic("Epic", "Desc"));
+        Subtask subtask = taskManager.createSubtask(new Subtask("Subtask", "Desc", Status.NEW, epic.getId()));
 
-        manager.getEpicById(epic.getId());
-        manager.getSubtaskById(subtask.getId());
+        taskManager.getEpicById(epic.getId());
+        taskManager.getSubtaskById(subtask.getId());
 
-        manager.deleteEpicById(epic.getId());
+        taskManager.deleteEpicById(epic.getId());
 
-        assertTrue(manager.getHistory().isEmpty());
+        assertTrue(taskManager.getHistory().isEmpty());
     }
 }

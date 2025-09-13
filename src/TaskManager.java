@@ -1,4 +1,6 @@
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskManager {
 
@@ -6,7 +8,7 @@ public interface TaskManager {
 
     void deleteAllTasks();
 
-    Task getTaskById(int id);
+    Optional<Task> getTaskById(int id);
 
     Task createTask(Task task);
 
@@ -14,11 +16,13 @@ public interface TaskManager {
 
     void deleteTaskById(int id);
 
+
     List<Epic> getAllEpics();
 
     void deleteAllEpics();
 
-    Epic getEpicById(int id);
+
+    Optional<Epic> getEpicById(int id);
 
     Epic createEpic(Epic epic);
 
@@ -30,7 +34,7 @@ public interface TaskManager {
 
     void deleteAllSubtasks();
 
-    Subtask getSubtaskById(int id);
+    Optional<Subtask> getSubtaskById(int id);
 
     Subtask createSubtask(Subtask subtask);
 
@@ -41,4 +45,10 @@ public interface TaskManager {
     List<Task> getHistory();
 
     List<Subtask> getSubtasksByEpicId(int epicId);
+
+    List<Task> getPrioritizedTasks();
+
+    boolean hasTimeOverlap(Task task1, Task task2);
+
+    boolean isTimeOverlappingWithExisting(Task task);
 }
