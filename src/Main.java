@@ -39,7 +39,7 @@ public class Main {
         }
 
         Task overlappingTask = new Task("Пересекающаяся задача", "Описание", Status.NEW,
-                Duration.ofHours(2), LocalDateTime.now().plusHours(1)); // Пересекается с task1
+                Duration.ofHours(2), LocalDateTime.now().plusHours(1));
 
         try {
             taskManager.createTask(overlappingTask);
