@@ -67,6 +67,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
                 return Optional.of(Integer.parseInt(pathParts[pathParts.length - 1]));
             }
         } catch (NumberFormatException e) {
+            System.err.println("Некорректный формат ID в пути: " + path);
         }
         return Optional.empty();
     }
