@@ -43,8 +43,10 @@ public class TasksHandler extends BaseHttpHandler {
             } else {
                 sendNotFound(exchange, "Задача с id=" + idOpt.get() + " не найдена");
             }
-        } else {
+        } else if (path.equals("/tasks")) {
             sendSuccess(exchange, taskManager.getAllTasks());
+        } else {
+            sendNotFound(exchange, "Некорректный путь запроса");
         }
     }
 
@@ -76,9 +78,11 @@ public class TasksHandler extends BaseHttpHandler {
             } else {
                 sendNotFound(exchange, "Задача с id=" + idOpt.get() + " не найдена");
             }
-        } else {
+        } else if (path.equals("/tasks")) {
             taskManager.deleteAllTasks();
             sendSuccess(exchange, "Все задачи удалены");
+        } else {
+            sendNotFound(exchange, "Некорректный путь запроса");
         }
     }
 }

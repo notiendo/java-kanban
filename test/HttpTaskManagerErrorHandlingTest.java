@@ -48,14 +48,22 @@ class HttpTaskManagerErrorHandlingTest extends HttpTaskManagerTest {
 
     @Test
     void testInvalidTaskIdFormat() throws Exception {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/tasks/invalid"))
-                .GET()
-                .build();
+        String[] invalidPaths = {
+                "http://localhost:8080/tasks/abc",
+                "http://localhost:8080/tasks/123abc",
+                "http://localhost:8080/tasks/12.34"
+        };
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        for (String path : invalidPaths) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(path))
+                    .GET()
+                    .build();
 
-        assertEquals(404, response.statusCode());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            assertEquals(404, response.statusCode(), "Для пути: " + path);
+        }
     }
 
     @Test

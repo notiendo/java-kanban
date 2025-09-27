@@ -64,10 +64,13 @@ public abstract class BaseHttpHandler implements HttpHandler {
         try {
             String[] pathParts = path.split("/");
             if (pathParts.length > 0) {
-                return Optional.of(Integer.parseInt(pathParts[pathParts.length - 1]));
+                String lastPart = pathParts[pathParts.length - 1];
+                if (lastPart.matches("\\d+")) {
+                    return Optional.of(Integer.parseInt(lastPart));
+                }
             }
         } catch (NumberFormatException e) {
-            System.err.println("Некорректный формат ID в пути: " + path);
+            System.err.println("Некорректный ID в пути: " + path);
         }
         return Optional.empty();
     }

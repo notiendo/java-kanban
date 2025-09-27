@@ -15,9 +15,9 @@ class HttpTaskManagerPrioritizedTest extends HttpTaskManagerTest {
         LocalDateTime now = LocalDateTime.now();
 
         Task task1 = new Task("Task 1", "Desc", Status.NEW,
-                Duration.ofHours(1), now.plusHours(2));
+                Duration.ofMinutes(30), now.plusHours(2));
         Task task2 = new Task("Task 2", "Desc", Status.NEW,
-                Duration.ofHours(1), now.plusHours(1));
+                Duration.ofMinutes(30), now.plusHours(1));
         Task task3 = new Task("Task 3", "Desc", Status.NEW);
 
         manager.createTask(task1);
@@ -34,6 +34,7 @@ class HttpTaskManagerPrioritizedTest extends HttpTaskManagerTest {
         assertEquals(200, response.statusCode());
         Task[] prioritized = gson.fromJson(response.body(), Task[].class);
         assertNotNull(prioritized);
+        assertEquals(3, prioritized.length);
 
         assertEquals("Task 2", prioritized[0].getName());
         assertEquals("Task 1", prioritized[1].getName());
@@ -92,9 +93,9 @@ class HttpTaskManagerPrioritizedTest extends HttpTaskManagerTest {
         LocalDateTime sameTime = LocalDateTime.now();
 
         Task task1 = new Task("Task 1", "Desc", Status.NEW,
-                Duration.ofHours(1), sameTime);
+                Duration.ofMinutes(30), sameTime);
         Task task2 = new Task("Task 2", "Desc", Status.NEW,
-                Duration.ofHours(2), sameTime);
+                Duration.ofMinutes(30), sameTime.plusHours(1));
 
         Task created2 = manager.createTask(task2);
         Task created1 = manager.createTask(task1);
